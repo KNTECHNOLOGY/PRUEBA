@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Recaudos</title>
+    <style>
+        .container {
+            padding: 20px;
+        }
+        .page-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .recaudo-card {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            button {
+                width: 100%;
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .recaudo-card {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-box">
+            <h2>Lista de Recaudos</h2>
+            <div id="recaudosContainer" class="recaudos-container">
+                <!-- Recaudos serán cargados aquí -->
+            </div>
+            <button onclick="window.location.href='MenuPrincipal.html'">Volver al Menú</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const recaudos = JSON.parse(localStorage.getItem('recaudos')) || [];
+            const container = document.getElementById('recaudosContainer');
+
+            recaudos.forEach((recaudo, index) => {
+                const recaudoCard = document.createElement('div');
+                recaudoCard.className = 'recaudo-card';
+                recaudoCard.innerHTML = `
+                    <h3>Id Prestamo: ${recaudo.idPrestamo}</h3>
+                    <p>Cliente: ${recaudo.cliente}</p>
+                    <p>Saldo Anterior: ${formatCurrency(recaudo.saldoAnterior)}</p>
+                    <p>Monto Abonado: ${formatCurrency(recaudo.montoRecaudo)}</p>
+                    <p>Nuevo Saldo: ${formatCurrency(recaudo.nuevoSaldo)}</p>
+                    <p>Fecha de Recaudo: ${recaudo.fecha}</p>
+                    <button onclick="generarRecibo(${index})">Generar Recibo PDF</button>
+                `;
+                container.appendChild(recaudoCard);
+            });
+
+            function formatCurrency(amount) {
+                const formatter = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                });
+                return formatter.format(amount);
+            }
+
+            window.generarRecibo = function(index) {
+                const recaudo = recaudos[index];
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.text(`Recibo de Recaudo`, 20, 10);
+                doc.text(`Id Prestamo: ${recaudo.idPrestamo}`, 20, 20);
+                doc.text(`Cliente: ${recaudo.cliente}`, 20, 30);
+                doc.text(`Saldo Anterior: ${formatCurrency(recaudo.saldoAnterior)}`, 20, 40);
+                doc.text(`Monto Abonado: ${formatCurrency(recaudo.montoRecaudo)}`, 20, 50);
+                doc.text(`Nuevo Saldo: ${formatCurrency(recaudo.nuevoSaldo)}`, 20, 60);
+                doc.text(`Fecha de Recaudo: ${recaudo.fecha}`, 20, 70);
+
+                doc.save(`recibo_${recaudo.idPrestamo}_${recaudo.fecha}.pdf`);
+            };
+        });
+    </script>
+</body>
+</html>

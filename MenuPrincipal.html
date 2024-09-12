@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="menu-box">
+            <h2>Menú Principal</h2>
+            <button onclick="window.location.href='carga_datos.html'">Carga de Datos</button>
+            <button onclick="window.location.href='lista_clientes.html'">Lista Clientes</button>
+            <button onclick="window.location.href='lista_recaudos.html'">Lista Recaudos</button>
+            
+            <button onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+    <script>
+        function logout() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
